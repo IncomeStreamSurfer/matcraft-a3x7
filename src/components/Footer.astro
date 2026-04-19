@@ -1,0 +1,54 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="mt-24 border-t border-[color:var(--color-line)] bg-[color:var(--color-ink)] text-[color:var(--color-bone)]">
+  <div class="container-x py-16 grid grid-cols-2 md:grid-cols-5 gap-10">
+    <div class="col-span-2">
+      <div class="flex items-center gap-2 font-semibold text-xl">
+        <span class="w-7 h-7 rounded-lg bg-[color:var(--color-bone)] flex items-center justify-center">
+          <span class="w-4 h-2.5 rounded-sm bg-[color:var(--color-accent)]"></span>
+        </span>
+        MatCraft
+      </div>
+      <p class="mt-4 text-sm text-white/70 max-w-sm">Precision-stitched mousemats for gamers, creators and workspaces that refuse to compromise on the surface under the mouse.</p>
+      <form class="mt-6 flex gap-2 max-w-sm" action="/api/subscribe" method="post">
+        <input type="email" name="email" required placeholder="Get 10% off →" class="flex-1 rounded-full bg-white/10 border border-white/20 px-4 py-2 text-sm placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-accent)]" />
+        <button class="btn bg-[color:var(--color-accent)] text-white text-sm">Join</button>
+      </form>
+    </div>
+    <div>
+      <h4 class="text-sm font-semibold mb-4 text-white/90">Shop</h4>
+      <ul class="space-y-2 text-sm text-white/70">
+        <li><a href="/shop" class="hover:text-white">All mousemats</a></li>
+        <li><a href="/collections/gaming" class="hover:text-white">Gaming</a></li>
+        <li><a href="/collections/extended" class="hover:text-white">Extended</a></li>
+        <li><a href="/collections/custom" class="hover:text-white">Custom</a></li>
+        <li><a href="/collections/rgb" class="hover:text-white">RGB</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-sm font-semibold mb-4 text-white/90">Company</h4>
+      <ul class="space-y-2 text-sm text-white/70">
+        <li><a href="/about" class="hover:text-white">About</a></li>
+        <li><a href="/contact" class="hover:text-white">Contact</a></li>
+        <li><a href="/faq" class="hover:text-white">FAQ</a></li>
+        <li><a href="/shipping" class="hover:text-white">Shipping</a></li>
+        <li><a href="/blog" class="hover:text-white">Journal</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-sm font-semibold mb-4 text-white/90">Help</h4>
+      <ul class="space-y-2 text-sm text-white/70">
+        <li><a href="/faq" class="hover:text-white">Support</a></li>
+        <li><a href="/shipping" class="hover:text-white">Returns</a></li>
+        <li><a href="mailto:hello@matcraft.studio" class="hover:text-white">hello@matcraft.studio</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="container-x py-6 flex flex-col md:flex-row items-center justify-between text-xs text-white/50">
+      <span>© {year} MatCraft. All rights reserved.</span>
+      <span>Made with precision in the UK.</span>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,49 @@
+---
+const links = [
+  { href: '/shop', label: 'Shop' },
+  { href: '/collections', label: 'Collections' },
+  { href: '/collections/gaming', label: 'Gaming' },
+  { href: '/collections/custom', label: 'Custom' },
+  { href: '/about', label: 'About' },
+  { href: '/faq', label: 'FAQ' },
+];
+---
+<header class="sticky top-0 z-40 bg-[color:var(--color-bone)]/80 backdrop-blur border-b border-[color:var(--color-line)]">
+  <div class="container-x flex items-center justify-between h-16">
+    <a href="/" class="flex items-center gap-2 font-semibold text-lg tracking-tight">
+      <span class="w-7 h-7 rounded-lg bg-[color:var(--color-ink)] flex items-center justify-center">
+        <span class="w-4 h-2.5 rounded-sm bg-[color:var(--color-accent)]"></span>
+      </span>
+      MatCraft
+    </a>
+    <nav class="hidden md:flex items-center gap-7 text-sm">
+      {links.map(l => (
+        <a href={l.href} class="hover:text-[color:var(--color-accent)] transition">{l.label}</a>
+      ))}
+    </nav>
+    <div class="flex items-center gap-2">
+      <a href="/cart" class="btn btn-ghost text-sm" id="cart-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Cart <span id="cart-count" class="hidden text-xs font-semibold bg-[color:var(--color-accent)] text-white rounded-full px-2 py-0.5">0</span>
+      </a>
+    </div>
+  </div>
+</header>
+<script is:inline>
+  (() => {
+    const updateCart = () => {
+      try {
+        const items = JSON.parse(localStorage.getItem('matcraft_cart') || '[]');
+        const total = items.reduce((s, i) => s + (i.qty || 1), 0);
+        const badge = document.getElementById('cart-count');
+        if (badge) {
+          if (total > 0) { badge.textContent = total; badge.classList.remove('hidden'); }
+          else badge.classList.add('hidden');
+        }
+      } catch {}
+    };
+    updateCart();
+    window.addEventListener('matcraft:cart', updateCart);
+    window.addEventListener('storage', updateCart);
+  })();
+</script>

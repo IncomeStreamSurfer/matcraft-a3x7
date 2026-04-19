@@ -1,0 +1,25 @@
+---
+import { formatPrice } from '../lib/supabase';
+interface Props { p: any }
+const { p } = Astro.props;
+---
+<a href={`/products/${p.slug}`} class="group card overflow-hidden hover:-translate-y-1 transition">
+  <div class="aspect-[4/3] relative overflow-hidden bg-[color:var(--color-line)]">
+    {p.image_url && (
+      <img src={p.image_url} alt={`${p.name} mousemat on a desk`} loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+    )}
+    {p.badge && (
+      <span class="absolute top-3 left-3 text-[11px] font-semibold uppercase tracking-wide bg-[color:var(--color-ink)] text-white px-2.5 py-1 rounded-full">{p.badge}</span>
+    )}
+  </div>
+  <div class="p-5">
+    <div class="flex items-baseline justify-between gap-3">
+      <h3 class="font-semibold text-lg tracking-tight">{p.name}</h3>
+      <span class="text-sm font-semibold whitespace-nowrap">{formatPrice(p.price_pence, p.currency)}</span>
+    </div>
+    <p class="mt-1.5 text-sm text-[color:var(--color-muted)] line-clamp-2">{p.description}</p>
+    <div class="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[color:var(--color-ink)] group-hover:text-[color:var(--color-accent)]">
+      View details →
+    </div>
+  </div>
+</a>
