@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getProducts } from '../lib/supabase';
+import { breadcrumbSchema, collectionSchema, siteUrl } from '../lib/schema';
+
+const products = await getProducts();
+const schemas = [
+  breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Shop', path: '/shop' }]),
+  collectionSchema('Shop All Mousemats', siteUrl('/shop'), products.map(p => ({ name: p.name, url: siteUrl(`/products/${p.slug}`) }))),
+];
+---
+<Base title="Shop All Mousemats | MatCraft" description="Browse the complete MatCraft mousemat collection. Gaming, desk, extended, and custom options in every size. Order online with fast dispatch." structuredData={schemas}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / Shop</nav>
+  <h1 class="text-4xl md:text-6xl font-semibold tracking-tight">Shop all mousemats</h1>
+  <p class="mt-4 text-lg text-[color:var(--color-muted)] max-w-2xl">The full MatCraft catalogue in one place. Whether you're buying mousemats online for the first time or refreshing a long-loved favourite, every surface below is built from the same five-layer precision build.</p>
+
+  <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {products.map(p => <ProductCard p={p} />)}
+  </div>
+
+  <section class="mt-20 grid md:grid-cols-3 gap-5">
+    <a href="/collections/gaming" class="card p-6 hover:-translate-y-1 transition">
+      <h3 class="font-semibold text-xl">Gaming →</h3>
+      <p class="mt-2 text-sm text-[color:var(--color-muted)]">Speed & control weaves for esports-level aim.</p>
+    </a>
+    <a href="/collections/extended" class="card p-6 hover:-translate-y-1 transition">
+      <h3 class="font-semibold text-xl">Extended →</h3>
+      <p class="mt-2 text-sm text-[color:var(--color-muted)]">Full-desk coverage for a seamless workspace.</p>
+    </a>
+    <a href="/collections/custom" class="card p-6 hover:-translate-y-1 transition">
+      <h3 class="font-semibold text-xl">Custom →</h3>
+      <p class="mt-2 text-sm text-[color:var(--color-muted)]">Your artwork, our precision print process.</p>
+    </a>
+  </section>
+</main>
+<Footer />
+</Base>

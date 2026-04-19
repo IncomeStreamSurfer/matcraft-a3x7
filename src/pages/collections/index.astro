@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { breadcrumbSchema } from '../../lib/schema';
+
+const collections = [
+  { slug: 'gaming', name: 'Gaming Mousemats', blurb: 'Speed and control weaves tuned for high-DPI mice. Optimised for esports precision.', img: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1200&auto=format&fit=crop' },
+  { slug: 'desk', name: 'Desk Mousemats', blurb: 'Clean, quiet desk mats in neutral tones for home offices and workstations.', img: 'https://images.unsplash.com/photo-1563191911-e65f8655ebf9?w=1200&auto=format&fit=crop' },
+  { slug: 'extended', name: 'Extended Mousemats', blurb: 'Full-desk coverage from keyboard to mouse, stitched and sealed.', img: 'https://images.unsplash.com/photo-1629429407759-01cd3d7cfb38?w=1200&auto=format&fit=crop' },
+  { slug: 'xl', name: 'XL Mousemats', blurb: 'Extra-large surfaces for dual-monitor setups and low-sens gaming rigs.', img: 'https://images.unsplash.com/photo-1629429408209-1f912961dbd8?w=1200&auto=format&fit=crop' },
+  { slug: 'small', name: 'Small Mousemats', blurb: 'Compact surfaces for tight spaces, laptops and travel.', img: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=1200&auto=format&fit=crop' },
+  { slug: 'custom', name: 'Custom Mousemats', blurb: 'Upload your artwork. We print and stitch it into a one-of-a-kind mat.', img: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=1200&auto=format&fit=crop' },
+  { slug: 'rgb', name: 'RGB Mousemats', blurb: 'LED-bordered mats with 14 lighting modes to finish the battlestation.', img: 'https://images.unsplash.com/photo-1600267165477-6d4cc8b7cfe7?w=1200&auto=format&fit=crop' },
+  { slug: 'hard', name: 'Hard Mousemats', blurb: 'Anodised aluminium and rigid surfaces for ultra-fast, scratch-free glide.', img: 'https://images.unsplash.com/photo-1605134513573-384dcf99a44c?w=1200&auto=format&fit=crop' },
+];
+---
+<Base title="Mousemat Collections | MatCraft" description="From gaming to desk setups, explore MatCraft's mousemat collections by style, size, and use. Find the perfect surface for your workspace." structuredData={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Collections', path: '/collections' }])}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / Collections</nav>
+  <h1 class="text-4xl md:text-6xl font-semibold tracking-tight">Explore our mousemat collections</h1>
+  <p class="mt-4 text-lg text-[color:var(--color-muted)] max-w-2xl">Every MatCraft mousemat collection solves a specific problem — from pixel-accurate FPS aim to minimalist office mats. Pick a style below and we'll surface the surfaces that fit.</p>
+
+  <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+    {collections.map(c => (
+      <a href={`/collections/${c.slug}`} class="group card overflow-hidden hover:-translate-y-1 transition">
+        <div class="aspect-[4/5] overflow-hidden">
+          <img src={c.img} alt={c.name} loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+        </div>
+        <div class="p-5">
+          <h2 class="font-semibold text-lg">{c.name}</h2>
+          <p class="mt-1.5 text-sm text-[color:var(--color-muted)]">{c.blurb}</p>
+          <span class="mt-3 inline-flex text-sm font-medium group-hover:text-[color:var(--color-accent)]">Shop collection →</span>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <section class="mt-20 card p-10">
+    <h2 class="text-2xl font-semibold">Not sure where to start?</h2>
+    <p class="mt-2 text-[color:var(--color-muted)] max-w-2xl">Most customers fall into one of three setups: a precision gaming rig, a clean professional desk, or a full battlestation. <a href="/shop" class="underline">Browse the shop</a>, or <a href="/contact" class="underline">chat with us</a> — we'll help you pick.</p>
+  </section>
+</main>
+<Footer />
+</Base>

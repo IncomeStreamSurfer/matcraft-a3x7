@@ -1,0 +1,237 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getProductsByCollection } from '../../lib/supabase';
+import { breadcrumbSchema, collectionSchema, faqSchema, siteUrl } from '../../lib/schema';
+
+export const prerender = false;
+
+const COPY: Record<string, any> = {
+  gaming: {
+    primary: 'gaming mousemat',
+    h1: 'Gaming Mousemats — Control, Speed & Precision',
+    title: 'Gaming Mousemats | MatCraft',
+    meta: 'Level up your setup with MatCraft gaming mousemats. Optimised for high-DPI mice, smooth tracking, and anti-slip bases. Shop the gaming range now.',
+    lead: 'A proper gaming mousemat is the difference between a flick that lands and one that wobbles. MatCraft gaming mousemats are engineered around high-DPI sensors — a tuned micro-fibre weave, a dense rubber base that refuses to creep, and stitched edges that survive years of sliding.',
+    pillars: [
+      { title: 'Sensor-tuned weaves', body: 'Our Speed and Control weaves are tested with the most popular gaming sensors (Hero, PAW, Focus Pro) so tracking is predictable at any DPI.' },
+      { title: 'Locked-down base', body: 'A 4mm natural-rubber base grips the desk so hard you can flick the whole mat and it still doesn\'t move.' },
+      { title: 'Edges that last', body: 'Every gaming mousemat gets double-stitched anti-fray edges. You will wear your mouse out long before these give up.' },
+    ],
+    faqs: [
+      { q: 'Should I get a Speed or Control gaming mousemat?', a: 'Play low DPI with lots of arm movement? Speed. Play FPS at high sens and need pixel-perfect stops? Control.' },
+      { q: 'Are MatCraft mats suitable for low-sens players?', a: 'Yes — pair the XL Speed with a gaming mouse at 400-800 DPI and you will have sweep room for days.' },
+      { q: 'Do gaming mousemats work on glass desks?', a: 'Yes. The natural rubber base grips glass, wood, laminate and metal.' },
+    ],
+    relatedHub: '/collections',
+  },
+  desk: {
+    primary: 'desk mousemat',
+    h1: 'Desk Mousemats for Home & Office',
+    title: 'Desk Mousemats | MatCraft',
+    meta: 'Upgrade your workspace with MatCraft desk mousemats. Professional designs, non-slip base, and smooth tracking surfaces. Order yours today.',
+    lead: 'A desk mousemat should disappear under your mouse and complement the rest of the room. MatCraft desk mousemats are designed for home offices and professional workspaces — muted palettes, soft textures, and the same five-layer build that backs our gaming range.',
+    pillars: [
+      { title: 'Understated palettes', body: 'Stone, graphite and ink tones that sit neatly next to wooden desks, monitor stands, and keyboards.' },
+      { title: 'Quiet surface', body: 'Soft woven top dampens mouse-click and keyboard noise — useful for video calls and shared rooms.' },
+      { title: 'Professional scale', body: 'Sized to sit beside a laptop or monitor without dominating the desk.' },
+    ],
+    faqs: [
+      { q: 'What size desk mousemat should I buy?', a: 'For a single mouse, a 300 × 250 mm Classic is ideal. If you want to cover the keyboard too, move up to an Extended size.' },
+      { q: 'Are MatCraft desk mats washable?', a: 'Yes — wipe with a damp cloth and mild soap. Avoid soaking and let it air-dry flat.' },
+      { q: 'Will a desk mousemat protect my wooden desk?', a: 'Yes. Our rubber base is non-marking and the cloth top prevents scratches from mice and keyboards.' },
+    ],
+    relatedHub: '/collections',
+  },
+  extended: {
+    primary: 'extended mousemat',
+    h1: 'Extended Mousemats — Full Desk Coverage',
+    title: 'Extended Mousemats | MatCraft',
+    meta: 'Cover your entire desk with MatCraft extended mousemats. Keyboard and mouse coverage, stitched edges, and premium cloth surfaces. Shop now.',
+    lead: 'An extended mousemat turns the whole desk into one consistent, stitched surface. MatCraft\'s extended mousemats roll out to 900 × 400 mm or more — enough room for a full-size keyboard and a massive tracking zone for your mouse.',
+    pillars: [
+      { title: 'Keyboard + mouse in one', body: 'Consistent feel under both hands means fewer distractions during long sessions.' },
+      { title: 'Cable tidy surface', body: 'Routes keyboard and mouse cables together and hides desk wear.' },
+      { title: 'Rolls for travel', body: 'Memory-trained cloth rolls up for LAN parties and coworking.' },
+    ],
+    faqs: [
+      { q: 'Is an extended mousemat worth it?', a: 'If you have room for 900 mm across the front of your desk and type + mouse a lot: yes. The consistency is addictive.' },
+      { q: 'Will it fit my desk?', a: 'Our Extended Cloth is 900 × 400 mm; our XL Speed is 1200 × 600 mm. Measure your desk before ordering.' },
+      { q: 'Do extended mousemats curl at the edges?', a: 'Ours do not — the closed-cell foam core and stitched edge keep it flat after the first 24 hours.' },
+    ],
+    relatedHub: '/collections/xl',
+  },
+  xl: {
+    primary: 'XL mousemat',
+    h1: 'XL Mousemats — Maximum Space, Maximum Control',
+    title: 'XL Mousemats | MatCraft',
+    meta: 'Shop MatCraft XL mousemats. Extra-large surfaces for dual-monitor setups, gaming rigs, and large desks. Fast dispatch. Free returns.',
+    lead: 'An XL mousemat gives low-sens players, streamers and multi-monitor desks the sweep room they actually need. MatCraft XL mousemats hit 1200 × 600 mm of precision weave — big enough for a full keyboard and a dinner-plate-sized tracking zone.',
+    pillars: [
+      { title: 'Huge tracking zone', body: 'Sweep from one edge of a 34" ultrawide to the other without ever lifting the mouse.' },
+      { title: 'Stable at scale', body: 'A thicker 5mm rubber base holds the mat flat across the entire desk.' },
+      { title: 'Heavy-gauge stitching', body: 'Edges are reinforced with our heaviest thread gauge for large-format wear.' },
+    ],
+    faqs: [
+      { q: 'How big is too big?', a: 'Measure the width of your desk minus 4cm each side and go as big as you can. You will not regret it.' },
+      { q: 'Will an XL mousemat fit in my washing machine?', a: 'No — spot clean only. Wipe with a damp cloth and let it air dry.' },
+      { q: 'Does XL come in the Speed weave only?', a: 'Our flagship XL is Speed; the Extended Cloth is Control-leaning. Both are in stock.' },
+    ],
+    relatedHub: '/collections/extended',
+  },
+  small: {
+    primary: 'small mousemat',
+    h1: 'Small Mousemats — Compact Surfaces for Tight Spaces',
+    title: 'Small Mousemats | MatCraft',
+    meta: 'Need a compact mousemat? MatCraft small mousemats deliver premium performance in a space-saving size. Perfect for travel and small desks.',
+    lead: 'Not every desk has room for an XL. A small mousemat keeps your mouse exactly where you want it on crowded desks, laptop stands and coworking tables — and MatCraft small mousemats still get the same five-layer precision build.',
+    pillars: [
+      { title: 'Bag-ready size', body: 'Slim enough to slide beside a 13" laptop in any sleeve.' },
+      { title: 'Lies flat instantly', body: 'Memory-trained cloth means no wavy edges when you unroll it.' },
+      { title: 'Premium build', body: 'Same stitched edges and rubber base as our full-size range.' },
+    ],
+    faqs: [
+      { q: 'Can a small mousemat keep up with gaming?', a: 'For casual gaming, absolutely. If you play competitive FPS at low DPI, go XL.' },
+      { q: 'Does it roll up without creasing?', a: 'Yes. Roll it surface-in and it will unroll flat in seconds.' },
+      { q: 'What size is a MatCraft small mat?', a: 'Our Compact Travel is 230 × 190 mm — the industry standard for small mousemats.' },
+    ],
+    relatedHub: '/collections/desk',
+  },
+  custom: {
+    primary: 'custom mousemat',
+    h1: 'Custom Mousemats — Your Design, Your Surface',
+    title: 'Custom Mousemats | MatCraft',
+    meta: 'Design your own custom mousemat with MatCraft. Upload your artwork, choose your size, and get a unique surface made just for you. Order today.',
+    lead: 'A custom mousemat is the most personal thing on your desk. Upload any high-resolution image and we\'ll print it edge-to-edge onto a stitched-edge MatCraft mat — in whichever size suits your setup. We send a digital proof before anything goes to print.',
+    pillars: [
+      { title: 'Edge-to-edge print', body: 'Our sublimation process locks colour into the fibre, so prints never crack or fade.' },
+      { title: 'Three sizes', body: 'Desk, XL, or Extended — pick the footprint that matches your workspace.' },
+      { title: 'Proof before print', body: 'We email you a mock-up within 24 hours and only print when you sign off.' },
+    ],
+    faqs: [
+      { q: 'What file format should I send?', a: 'PNG or JPG at 300 DPI in sRGB. We accept PDFs and AI files too.' },
+      { q: 'Can I use any image?', a: 'Yes, as long as you own the rights or have permission. We cannot print copyrighted IP without proof of licence.' },
+      { q: 'How long does a custom mousemat take?', a: '3-5 working days from proof approval, plus shipping.' },
+    ],
+    relatedHub: '/collections',
+  },
+  rgb: {
+    primary: 'RGB mousemat',
+    h1: 'RGB Mousemats — Light Up Your Setup',
+    title: 'RGB Mousemats | MatCraft',
+    meta: 'Shop MatCraft RGB mousemats with built-in LED lighting. Multiple lighting modes, USB powered, compatible with all mice. Elevate your battlestation.',
+    lead: 'An RGB mousemat is the easiest upgrade you can make to a battlestation. The MatCraft RGB mousemat rings your entire surface with 14 lighting modes and connects to any PC via a single braided USB cable.',
+    pillars: [
+      { title: '14 lighting modes', body: 'Solid, breathing, wave, rainbow and colour cycle — switch via in-line controller.' },
+      { title: 'USB powered', body: 'No batteries, no drivers — plug and glow.' },
+      { title: 'Hybrid surface', body: 'Smoother than cloth, grippier than glass. Plays well with every sensor.' },
+    ],
+    faqs: [
+      { q: 'Does the RGB mousemat work with my mouse?', a: 'Yes — the mat is USB powered and the surface works with all optical and laser mice.' },
+      { q: 'Can I turn the lights off?', a: 'Yes, the in-line controller has an off mode when you want a calm desk.' },
+      { q: 'How much power does the RGB mat draw?', a: 'Under 2W on full rainbow — negligible on any USB port.' },
+    ],
+    relatedHub: '/collections/gaming',
+  },
+  hard: {
+    primary: 'hard mousemat',
+    h1: 'Hard Mousemats — Rigid Surfaces for Speed & Accuracy',
+    title: 'Hard Mousemats | MatCraft',
+    meta: 'Prefer a rigid surface? MatCraft hard mousemats offer ultra-smooth, fast-tracking plastic and aluminium pads for precision use. Shop now.',
+    lead: 'A hard mousemat feels completely different under your hand — smoother, faster, and impossible to wear out. MatCraft\'s hard mousemats are CNC-machined from anodised aluminium with soft rubber feet to pin them to any desk.',
+    pillars: [
+      { title: 'Glass-smooth surface', body: 'Anodised aluminium means effectively zero friction and a predictable glide that never matts down.' },
+      { title: 'Wipe clean', body: 'No fibres to hold dust. Wipe with a microfibre and it looks brand new.' },
+      { title: 'Forever durability', body: 'There is nothing to wear out. These are the last mousemats you\'ll buy.' },
+    ],
+    faqs: [
+      { q: 'Is a hard mousemat loud?', a: 'Slightly louder than cloth — think "pen on paper" rather than silent cloth.' },
+      { q: 'Will a hard mousemat scratch my mouse feet?', a: 'No — our anodised surface is softer than PTFE, so mouse feet stay smooth.' },
+      { q: 'Are hard mats good for gaming?', a: 'Yes — many esports pros prefer them for predictable speed and infinite lifespan.' },
+    ],
+    relatedHub: '/collections/gaming',
+  },
+};
+
+const { slug } = Astro.params;
+const cfg = COPY[slug as string];
+if (!cfg) return new Response('Not found', { status: 404 });
+
+const products = await getProductsByCollection(slug as string);
+const url = siteUrl(`/collections/${slug}`);
+const schemas = [
+  breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Collections', path: '/collections' }, { name: cfg.h1, path: `/collections/${slug}` }]),
+  collectionSchema(cfg.h1, url, products.map(p => ({ name: p.name, url: siteUrl(`/products/${p.slug}`) }))),
+  faqSchema(cfg.faqs.map((f: any) => ({ q: f.q, a: f.a }))),
+];
+---
+<Base title={cfg.title} description={cfg.meta} structuredData={schemas}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4">
+    <a href="/" class="hover:underline">Home</a> / <a href="/collections" class="hover:underline">Collections</a> / {slug}
+  </nav>
+  <h1 class="text-4xl md:text-6xl font-semibold tracking-tight max-w-3xl">{cfg.h1}</h1>
+  <p class="mt-5 text-lg text-[color:var(--color-muted)] max-w-3xl">{cfg.lead}</p>
+
+  <div class="mt-10 flex flex-wrap gap-3 text-sm">
+    <a href="/shop" class="btn btn-primary">Shop all mousemats</a>
+    <a href={cfg.relatedHub} class="btn btn-ghost">Related collections</a>
+  </div>
+
+  <section class="mt-16">
+    <div class="grid md:grid-cols-3 gap-5">
+      {cfg.pillars.map((p: any) => (
+        <div class="card p-6">
+          <h3 class="font-semibold text-lg">{p.title}</h3>
+          <p class="mt-2 text-sm text-[color:var(--color-muted)]">{p.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-16">
+    <div class="flex items-end justify-between mb-8">
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight">Mousemats in this collection</h2>
+      <a href="/shop" class="text-sm hover:underline">Browse all →</a>
+    </div>
+    {products.length === 0 ? (
+      <p class="text-[color:var(--color-muted)]">No products yet — check back soon. Meanwhile, browse our <a href="/shop" class="underline">full catalogue</a>.</p>
+    ) : (
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {products.map(p => <ProductCard p={p} />)}
+      </div>
+    )}
+  </section>
+
+  <section class="mt-20">
+    <h2 class="text-3xl md:text-4xl font-semibold tracking-tight">{cfg.primary} — frequently asked</h2>
+    <div class="mt-8 space-y-3 max-w-3xl">
+      {cfg.faqs.map((f: any) => (
+        <details class="card p-5 group">
+          <summary class="font-medium cursor-pointer flex justify-between items-center">
+            {f.q}<span class="text-[color:var(--color-muted)] group-open:rotate-45 transition">+</span>
+          </summary>
+          <p class="mt-3 text-sm text-[color:var(--color-muted)]">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-20 card p-10 bg-[color:var(--color-ink)] text-[color:var(--color-bone)]">
+    <div class="grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <h2 class="text-3xl font-semibold">Still choosing?</h2>
+        <p class="mt-2 text-white/70 max-w-md">Tell us how you use your desk and we'll recommend the exact {cfg.primary} that fits your setup.</p>
+      </div>
+      <div class="flex md:justify-end gap-3">
+        <a href="/contact" class="btn bg-[color:var(--color-accent)] text-white">Get a recommendation</a>
+        <a href="/shop" class="btn border border-white/20 text-white hover:bg-white/10">Browse all</a>
+      </div>
+    </div>
+  </section>
+</main>
+<Footer />
+</Base>
