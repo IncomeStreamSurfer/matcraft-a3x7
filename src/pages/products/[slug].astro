@@ -1,0 +1,170 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getProductBySlug, getProducts, formatPrice } from '../../lib/supabase';
+import { breadcrumbSchema, productSchema, faqSchema, siteUrl } from '../../lib/schema';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const p = await getProductBySlug(slug as string);
+if (!p) return Astro.redirect('/shop');
+
+const all = await getProducts();
+const related = all.filter(r => r.slug !== p.slug && r.collections.some(c => p.collections.includes(c))).slice(0, 3);
+
+const faqs = [
+  { q: 'How long until my ' + p.name.toLowerCase() + ' arrives?', a: 'UK orders dispatch same-day and typically arrive in 2-3 working days. International orders take 5-10 working days.' },
+  { q: 'Is the base non-slip?', a: 'Yes — every MatCraft mousemat has a dense natural-rubber base that grips wood, laminate, glass and metal desks.' },
+  { q: 'Can I return it?', a: 'Yes. 30-day returns on stock mousemats, no questions asked. Custom printed mats are non-returnable.' },
+  { q: 'How should I clean it?', a: 'Wipe with a damp cloth and mild soap. Lay flat to dry — do not soak or machine wash.' },
+];
+
+const schemas = [
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Shop', path: '/shop' },
+    { name: p.name, path: `/products/${p.slug}` },
+  ]),
+  productSchema({
+    name: p.name,
+    description: p.description,
+    image: p.image_url || '',
+    price_pence: p.price_pence,
+    currency: p.currency,
+    slug: p.slug,
+    in_stock: p.in_stock,
+  }),
+  faqSchema(faqs),
+];
+
+const specs = Object.entries(p.specs || {});
+const features = (p.features || []) as any[];
+---
+<Base
+  title={`${p.name} | MatCraft`}
+  description={p.description}
+  ogImage={p.image_url || undefined}
+  structuredData={schemas}
+>
+<Header />
+<main class="container-x py-12">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-6">
+    <a href="/" class="hover:underline">Home</a> / <a href="/shop" class="hover:underline">Shop</a> / {p.name}
+  </nav>
+
+  <div class="grid md:grid-cols-2 gap-10">
+    <div class="relative">
+      {p.image_url && (
+        <img src={p.image_url} alt={`${p.name} — ${p.description}`} class="w-full rounded-3xl object-cover aspect-square" />
+      )}
+      {p.badge && (
+        <span class="absolute top-4 left-4 text-[11px] font-semibold uppercase tracking-wide bg-[color:var(--color-ink)] text-white px-3 py-1.5 rounded-full">{p.badge}</span>
+      )}
+    </div>
+    <div>
+      <div class="flex items-center gap-2 text-xs uppercase tracking-widest text-[color:var(--color-muted)]">
+        {p.category && <span>{p.category}</span>}
+        {p.in_stock ? <span class="text-green-700">· In stock</span> : <span class="text-red-600">· Sold out</span>}
+      </div>
+      <h1 class="mt-2 text-3xl md:text-5xl font-semibold tracking-tight">{p.name}</h1>
+      <p class="mt-4 text-lg text-[color:var(--color-muted)]">{p.description}</p>
+      <div class="mt-6 text-3xl font-semibold">{formatPrice(p.price_pence, p.currency)}</div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button id="add-to-cart" class="btn btn-primary" data-slug={p.slug} data-name={p.name} data-price={p.price_pence} data-image={p.image_url}>Add to cart</button>
+        <button id="buy-now" class="btn btn-ghost" data-slug={p.slug}>Buy now</button>
+      </div>
+
+      <ul class="mt-8 text-sm space-y-2 text-[color:var(--color-muted)]">
+        <li>✓ Free UK shipping over £30</li>
+        <li>✓ 30-day returns (stock items)</li>
+        <li>✓ Dispatched next working day</li>
+      </ul>
+
+      {features.length > 0 && (
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {features.map(f => (
+            <div class="card p-4">
+              <h3 class="font-semibold text-sm">{f.title}</h3>
+              <p class="mt-1 text-xs text-[color:var(--color-muted)]">{f.body}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+
+  {p.long_description && (
+    <section class="mt-16 grid md:grid-cols-3 gap-10">
+      <div class="md:col-span-2">
+        <h2 class="text-2xl md:text-3xl font-semibold tracking-tight">About this mousemat</h2>
+        <p class="mt-4 text-[color:var(--color-muted)] leading-relaxed">{p.long_description}</p>
+        <p class="mt-4 text-[color:var(--color-muted)] leading-relaxed">Every MatCraft {p.name.toLowerCase()} is inspected by hand before it leaves our workshop. Stitching, base adhesion, and weave density all get checked so the mousemat you unroll is flat, quiet, and ready to work the moment it lands on your desk.</p>
+      </div>
+      {specs.length > 0 && (
+        <div>
+          <h3 class="text-sm uppercase tracking-widest text-[color:var(--color-muted)]">Specifications</h3>
+          <dl class="mt-4 divide-y divide-[color:var(--color-line)] border-y border-[color:var(--color-line)]">
+            {specs.map(([k, v]) => (
+              <div class="py-3 flex justify-between gap-4 text-sm">
+                <dt class="text-[color:var(--color-muted)] capitalize">{k}</dt>
+                <dd class="font-medium text-right">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
+    </section>
+  )}
+
+  <section class="mt-16">
+    <h2 class="text-2xl md:text-3xl font-semibold tracking-tight">Frequently asked</h2>
+    <div class="mt-6 space-y-3 max-w-3xl">
+      {faqs.map(f => (
+        <details class="card p-5 group">
+          <summary class="font-medium cursor-pointer flex justify-between items-center">
+            {f.q}<span class="text-[color:var(--color-muted)] group-open:rotate-45 transition">+</span>
+          </summary>
+          <p class="mt-3 text-sm text-[color:var(--color-muted)]">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="mt-20">
+      <h2 class="text-2xl md:text-3xl font-semibold tracking-tight">You might also like</h2>
+      <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {related.map(r => <ProductCard p={r} />)}
+      </div>
+    </section>
+  )}
+</main>
+<Footer />
+
+<script is:inline>
+(() => {
+  const add = document.getElementById('add-to-cart');
+  const buy = document.getElementById('buy-now');
+  const addItem = () => {
+    const items = JSON.parse(localStorage.getItem('matcraft_cart') || '[]');
+    const slug = add.dataset.slug;
+    const existing = items.find(i => i.slug === slug);
+    if (existing) existing.qty += 1;
+    else items.push({ slug, name: add.dataset.name, price: parseInt(add.dataset.price), image: add.dataset.image, qty: 1 });
+    localStorage.setItem('matcraft_cart', JSON.stringify(items));
+    window.dispatchEvent(new Event('matcraft:cart'));
+    add.textContent = '✓ Added to cart';
+    setTimeout(() => { add.textContent = 'Add to cart'; }, 1500);
+  };
+  add?.addEventListener('click', addItem);
+  buy?.addEventListener('click', async () => {
+    addItem();
+    window.location.href = '/cart';
+  });
+})();
+</script>
+</Base>

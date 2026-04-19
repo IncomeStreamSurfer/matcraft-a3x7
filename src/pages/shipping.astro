@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { breadcrumbSchema } from '../lib/schema';
+---
+<Base title="Shipping & Returns | MatCraft" description="MatCraft shipping rates, delivery times and our 30-day returns policy. Free UK shipping on orders over £30." structuredData={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Shipping', path: '/shipping' }])}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / Shipping</nav>
+  <h1 class="text-4xl md:text-6xl font-semibold tracking-tight">Shipping & returns</h1>
+  <p class="mt-4 text-lg text-[color:var(--color-muted)] max-w-2xl">Honest rates, tracked dispatch, and a 30-day return window so you can actually try your mousemat on your desk before committing.</p>
+
+  <div class="mt-10 grid md:grid-cols-2 gap-5">
+    <div class="card p-6">
+      <h2 class="font-semibold text-xl">UK shipping</h2>
+      <ul class="mt-3 text-sm text-[color:var(--color-muted)] space-y-2">
+        <li>· Standard: £3.99 (2-3 working days)</li>
+        <li>· Free over £30 ordered</li>
+        <li>· Express: £6.99 (next working day)</li>
+      </ul>
+    </div>
+    <div class="card p-6">
+      <h2 class="font-semibold text-xl">International shipping</h2>
+      <ul class="mt-3 text-sm text-[color:var(--color-muted)] space-y-2">
+        <li>· EU: £9.99 (3-5 working days)</li>
+        <li>· US / Canada: £14.99 (5-8 working days)</li>
+        <li>· Rest of world: from £17.99 (5-10 working days)</li>
+      </ul>
+    </div>
+    <div class="card p-6">
+      <h2 class="font-semibold text-xl">Returns</h2>
+      <p class="mt-3 text-sm text-[color:var(--color-muted)]">30 days from the day it arrives. Drop the mat into any post box with the prepaid label we send with every UK order. We refund as soon as it reaches our workshop.</p>
+    </div>
+    <div class="card p-6">
+      <h2 class="font-semibold text-xl">Custom orders</h2>
+      <p class="mt-3 text-sm text-[color:var(--color-muted)]">Custom printed mousemats are made to order and cannot be returned unless they arrive damaged or defective. We always send a digital proof before we print.</p>
+    </div>
+  </div>
+
+  <section class="mt-16 card p-10">
+    <h2 class="text-2xl font-semibold">Track your order</h2>
+    <p class="mt-2 text-[color:var(--color-muted)]">Every UK dispatch includes a Royal Mail Tracked 24 / 48 reference. International orders ship with DHL or DPD with live tracking. Tracking links go out by email the moment your mat leaves the workshop.</p>
+    <div class="mt-5 flex flex-wrap gap-3">
+      <a href="/contact" class="btn btn-primary">Need help with an order?</a>
+      <a href="/faq" class="btn btn-ghost">Read the FAQ</a>
+    </div>
+  </section>
+</main>
+<Footer />
+</Base>

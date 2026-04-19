@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { breadcrumbSchema } from '../lib/schema';
+
+const sent = Astro.url.searchParams.get('sent');
+---
+<Base title="Contact MatCraft" description="Get in touch with the MatCraft workshop — product questions, bulk orders and custom print enquiries." structuredData={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }])}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / Contact</nav>
+  <div class="grid md:grid-cols-2 gap-12">
+    <div>
+      <h1 class="text-4xl md:text-6xl font-semibold tracking-tight">Talk to the workshop.</h1>
+      <p class="mt-4 text-lg text-[color:var(--color-muted)]">Product questions, bulk orders, custom prints, returns — anything you need, the whole team reads every message.</p>
+      <div class="mt-8 space-y-3 text-sm">
+        <div><span class="text-[color:var(--color-muted)] text-xs uppercase tracking-widest">Email</span><br/>hello@matcraft.studio</div>
+        <div><span class="text-[color:var(--color-muted)] text-xs uppercase tracking-widest">Workshop</span><br/>Manchester, United Kingdom</div>
+        <div><span class="text-[color:var(--color-muted)] text-xs uppercase tracking-widest">Response time</span><br/>Under 24 hours, Mon–Fri</div>
+      </div>
+      <div class="mt-8 text-sm">
+        Popular links: <a href="/faq" class="underline">FAQ</a>, <a href="/shipping" class="underline">Shipping & returns</a>, <a href="/collections/custom" class="underline">Custom prints</a>.
+      </div>
+    </div>
+    <div>
+      {sent ? (
+        <div class="card p-8 text-center">
+          <div class="w-12 h-12 mx-auto rounded-full bg-[color:var(--color-accent)]/15 text-[color:var(--color-accent)] flex items-center justify-center text-xl">✓</div>
+          <h2 class="mt-4 text-2xl font-semibold">Thanks — we've got it.</h2>
+          <p class="mt-2 text-sm text-[color:var(--color-muted)]">We'll reply to the email address you entered within one working day.</p>
+        </div>
+      ) : (
+        <form action="/api/contact" method="post" class="card p-8 space-y-4">
+          <div>
+            <label class="text-sm font-medium">Name</label>
+            <input name="name" required class="mt-1 w-full rounded-2xl border border-[color:var(--color-line)] px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--color-ink)]" />
+          </div>
+          <div>
+            <label class="text-sm font-medium">Email</label>
+            <input type="email" name="email" required class="mt-1 w-full rounded-2xl border border-[color:var(--color-line)] px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--color-ink)]" />
+          </div>
+          <div>
+            <label class="text-sm font-medium">Subject</label>
+            <input name="subject" class="mt-1 w-full rounded-2xl border border-[color:var(--color-line)] px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--color-ink)]" />
+          </div>
+          <div>
+            <label class="text-sm font-medium">Message</label>
+            <textarea name="message" rows="5" required class="mt-1 w-full rounded-2xl border border-[color:var(--color-line)] px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--color-ink)]"></textarea>
+          </div>
+          <button class="btn btn-primary w-full">Send message</button>
+        </form>
+      )}
+    </div>
+  </div>
+</main>
+<Footer />
+</Base>

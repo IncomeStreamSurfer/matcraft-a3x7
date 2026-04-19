@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { breadcrumbSchema, faqSchema } from '../lib/schema';
+
+const faqs = [
+  { q: 'Which mousemat is best for gaming?', a: 'Go XL Speed for low-DPI flick play. Pick our Control weave for FPS and strategy where precision stops matter more than raw speed.' },
+  { q: 'Do you ship outside the UK?', a: 'Yes. We ship worldwide from our Manchester workshop. UK orders arrive in 2-3 working days, EU in 3-5, and the rest of the world in 5-10.' },
+  { q: 'How do I clean my mousemat?', a: 'Wipe with a damp cloth and a drop of mild soap. Lay flat to dry. Do not soak, do not machine wash, do not tumble dry.' },
+  { q: 'Can I return a custom printed mousemat?', a: 'Custom prints are made to order so we cannot accept returns unless the mat arrives damaged. All stock mats are covered by our 30-day no-questions returns policy.' },
+  { q: 'How long does shipping take?', a: 'UK: 2-3 working days (free over £30). EU: 3-5 working days. Worldwide: 5-10 working days. Custom orders add 3-5 working days for print.' },
+  { q: 'Are MatCraft mousemats good with gaming mice?', a: 'Yes — every weave is tested with Logitech Hero, PixArt PAW and Razer Focus Pro sensors to confirm consistent tracking at high DPI.' },
+  { q: 'What size mousemat should I buy?', a: 'For a single mouse, go 300-400 mm wide. For a full-desk setup with keyboard + mouse, step up to 900 mm extended or 1200 mm XL.' },
+  { q: 'Can I get a refund if I change my mind?', a: 'Yes — 30 days, no questions asked. Drop your mat in any Royal Mail post box with the prepaid return label we send you.' },
+  { q: 'Does the RGB mousemat need drivers?', a: 'No drivers. The in-line controller handles all 14 lighting modes — plug the braided USB into any port and you\'re good.' },
+  { q: 'Are the edges really stitched?', a: 'Yes. Every mat gets double-stitched anti-fray edges using reinforced polyester thread. No hot-seal, no glue, no fraying.' },
+];
+---
+<Base title="Mousemat FAQ | MatCraft" description="Everything you need to know before buying a MatCraft mousemat — sizing, shipping, returns, care and gaming compatibility." structuredData={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'FAQ', path: '/faq' }]), faqSchema(faqs.map(f => ({ q: f.q, a: f.a })))]}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / FAQ</nav>
+  <h1 class="text-4xl md:text-6xl font-semibold tracking-tight">Mousemat FAQ</h1>
+  <p class="mt-4 text-lg text-[color:var(--color-muted)] max-w-2xl">Everything customers ask us before buying. Can't find your question? <a href="/contact" class="underline">Ask the workshop →</a></p>
+
+  <div class="mt-12 space-y-3 max-w-3xl">
+    {faqs.map(f => (
+      <details class="card p-5 group">
+        <summary class="font-medium cursor-pointer flex justify-between items-center">
+          {f.q}<span class="text-[color:var(--color-muted)] group-open:rotate-45 transition">+</span>
+        </summary>
+        <p class="mt-3 text-sm text-[color:var(--color-muted)]">{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <section class="mt-20 card p-10 grid md:grid-cols-2 gap-6 items-center">
+    <div>
+      <h2 class="text-3xl font-semibold">Still stuck?</h2>
+      <p class="mt-2 text-[color:var(--color-muted)]">Send the team a message and we'll reply within a working day.</p>
+    </div>
+    <div class="md:text-right">
+      <a href="/contact" class="btn btn-primary">Contact us →</a>
+    </div>
+  </section>
+</main>
+<Footer />
+</Base>

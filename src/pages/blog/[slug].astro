@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getPostBySlug } from '../../lib/supabase';
+import { breadcrumbSchema, siteUrl } from '../../lib/schema';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const post = await getPostBySlug(slug as string);
+if (!post) return Astro.redirect('/blog');
+
+const blogPostingSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  datePublished: post.published_at,
+  description: post.seo_description || post.excerpt || undefined,
+  image: post.cover_image_url || undefined,
+  author: { '@type': 'Organization', name: 'MatCraft' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MatCraft',
+    logo: { '@type': 'ImageObject', url: siteUrl('/favicon.svg') },
+  },
+  mainEntityOfPage: siteUrl(`/blog/${post.slug}`),
+};
+---
+<Base
+  title={`${post.seo_title || post.title} | MatCraft Journal`}
+  description={post.seo_description || post.excerpt || post.title}
+  ogImage={post.cover_image_url || undefined}
+  ogType="article"
+  publishDate={post.published_at || undefined}
+  tags={post.tags}
+  structuredData={[
+    breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Journal', path: '/blog' }, { name: post.title, path: `/blog/${post.slug}` }]),
+    blogPostingSchema,
+  ]}
+>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / <a href="/blog" class="hover:underline">Journal</a> / {post.title}</nav>
+  <article class="max-w-3xl">
+    <h1 class="text-4xl md:text-6xl font-semibold tracking-tight leading-tight">{post.title}</h1>
+    {post.published_at && <p class="mt-4 text-sm text-[color:var(--color-muted)]">{new Date(post.published_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>}
+    {post.cover_image_url && <img src={post.cover_image_url} alt={post.title} class="mt-8 rounded-3xl w-full aspect-[16/9] object-cover" />}
+    <div class="prose prose-lg mt-10 text-[color:var(--color-ink)]" set:html={post.body || ''}></div>
+  </article>
+</main>
+<Footer />
+</Base>

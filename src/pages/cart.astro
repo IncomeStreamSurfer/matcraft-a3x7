@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base title="Your Cart | MatCraft" description="Review your MatCraft order, apply discount codes, and checkout securely. Fast dispatch on all orders." noindex={true}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / Your cart</nav>
+  <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Your MatCraft cart</h1>
+
+  <div id="empty-cart" class="hidden mt-10 card p-10 text-center">
+    <p class="text-lg text-[color:var(--color-muted)]">Your cart is empty.</p>
+    <a href="/shop" class="mt-4 inline-flex btn btn-primary">Browse mousemats</a>
+  </div>
+
+  <div id="cart-body" class="hidden mt-10 grid md:grid-cols-3 gap-10">
+    <div class="md:col-span-2 space-y-4" id="cart-items"></div>
+    <aside class="card p-6 h-fit sticky top-20">
+      <h2 class="font-semibold text-lg">Order summary</h2>
+      <div class="mt-4 text-sm text-[color:var(--color-muted)] space-y-2">
+        <div class="flex justify-between"><span>Subtotal</span><span id="subtotal">£0.00</span></div>
+        <div class="flex justify-between"><span>Shipping</span><span id="shipping">calculated at checkout</span></div>
+      </div>
+      <div class="mt-4 border-t border-[color:var(--color-line)] pt-4 flex justify-between font-semibold">
+        <span>Total</span><span id="total">£0.00</span>
+      </div>
+      <button id="checkout-btn" class="mt-6 w-full btn btn-primary">Checkout securely</button>
+      <p class="mt-4 text-xs text-[color:var(--color-muted)]">Payments processed by Stripe. Free UK shipping over £30.</p>
+      <div class="mt-4 text-xs flex gap-2">
+        <a href="/shipping" class="underline">Shipping</a>
+        <a href="/faq" class="underline">FAQ</a>
+      </div>
+    </aside>
+  </div>
+</main>
+<Footer />
+
+<script is:inline>
+(() => {
+  const fmt = (p) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(p / 100);
+  const render = () => {
+    const items = JSON.parse(localStorage.getItem('matcraft_cart') || '[]');
+    const empty = document.getElementById('empty-cart');
+    const body = document.getElementById('cart-body');
+    const list = document.getElementById('cart-items');
+    if (items.length === 0) {
+      empty.classList.remove('hidden');
+      body.classList.add('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+    body.classList.remove('hidden');
+    list.innerHTML = items.map(i => `
+      <div class="card p-4 flex gap-4 items-center">
+        ${i.image ? `<img src="${i.image}" alt="${i.name}" class="w-24 h-24 rounded-2xl object-cover" />` : ''}
+        <div class="flex-1">
+          <div class="font-semibold">${i.name}</div>
+          <div class="text-sm text-[color:var(--color-muted)]">${fmt(i.price)} each</div>
+          <div class="mt-2 inline-flex items-center border border-[color:var(--color-line)] rounded-full">
+            <button class="px-3 py-1 qty-dec" data-slug="${i.slug}">−</button>
+            <span class="px-3 text-sm">${i.qty}</span>
+            <button class="px-3 py-1 qty-inc" data-slug="${i.slug}">+</button>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="font-semibold">${fmt(i.price * i.qty)}</div>
+          <button class="mt-2 text-xs text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] remove-item" data-slug="${i.slug}">Remove</button>
+        </div>
+      </div>
+    `).join('');
+    const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+    document.getElementById('subtotal').textContent = fmt(subtotal);
+    document.getElementById('shipping').textContent = subtotal >= 3000 ? 'Free' : fmt(499);
+    document.getElementById('total').textContent = fmt(subtotal + (subtotal >= 3000 ? 0 : 499));
+    bind();
+  };
+  const bind = () => {
+    document.querySelectorAll('.qty-inc').forEach(b => b.addEventListener('click', () => update(b.dataset.slug, 1)));
+    document.querySelectorAll('.qty-dec').forEach(b => b.addEventListener('click', () => update(b.dataset.slug, -1)));
+    document.querySelectorAll('.remove-item').forEach(b => b.addEventListener('click', () => remove(b.dataset.slug)));
+  };
+  const update = (slug, delta) => {
+    const items = JSON.parse(localStorage.getItem('matcraft_cart') || '[]');
+    const it = items.find(i => i.slug === slug);
+    if (!it) return;
+    it.qty = Math.max(1, it.qty + delta);
+    localStorage.setItem('matcraft_cart', JSON.stringify(items));
+    window.dispatchEvent(new Event('matcraft:cart'));
+    render();
+  };
+  const remove = (slug) => {
+    const items = JSON.parse(localStorage.getItem('matcraft_cart') || '[]').filter(i => i.slug !== slug);
+    localStorage.setItem('matcraft_cart', JSON.stringify(items));
+    window.dispatchEvent(new Event('matcraft:cart'));
+    render();
+  };
+  document.getElementById('checkout-btn')?.addEventListener('click', async () => {
+    const items = JSON.parse(localStorage.getItem('matcraft_cart') || '[]');
+    if (items.length === 0) return;
+    const btn = document.getElementById('checkout-btn');
+    btn.textContent = 'Creating checkout…';
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items.map(i => ({ slug: i.slug, qty: i.qty })) }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else { btn.textContent = 'Checkout failed — retry'; btn.disabled = false; console.error(data); }
+    } catch (e) {
+      btn.textContent = 'Checkout failed — retry';
+      btn.disabled = false;
+    }
+  });
+  render();
+})();
+</script>
+</Base>

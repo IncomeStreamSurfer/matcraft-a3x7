@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getPublishedPosts } from '../../lib/supabase';
+import { breadcrumbSchema } from '../../lib/schema';
+
+export const prerender = false;
+
+const posts = await getPublishedPosts();
+---
+<Base title="MatCraft Journal — Mousemat guides & reviews" description="Mousemat buying guides, gaming setup advice and MatCraft workshop stories. Fresh articles added regularly." structuredData={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Journal', path: '/blog' }])}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / Journal</nav>
+  <h1 class="text-4xl md:text-6xl font-semibold tracking-tight">The MatCraft Journal</h1>
+  <p class="mt-4 text-lg text-[color:var(--color-muted)] max-w-2xl">Guides, reviews, and workshop stories. Everything we learn about building the perfect mousemat — shared out loud.</p>
+
+  {posts.length === 0 ? (
+    <section class="mt-16 card p-10 text-center max-w-2xl mx-auto">
+      <h2 class="text-2xl font-semibold">Fresh articles landing soon.</h2>
+      <p class="mt-3 text-[color:var(--color-muted)]">We're writing the first batch of mousemat buying guides and setup reviews right now. Drop your email to get them first.</p>
+      <form class="mt-6 flex gap-2 max-w-sm mx-auto" action="/api/subscribe" method="post">
+        <input type="email" name="email" required placeholder="you@example.com" class="flex-1 rounded-full border border-[color:var(--color-line)] px-4 py-2 text-sm focus:outline-none focus:border-[color:var(--color-ink)]" />
+        <button class="btn btn-primary text-sm">Notify me</button>
+      </form>
+    </section>
+  ) : (
+    <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {posts.map(p => (
+        <a href={`/blog/${p.slug}`} class="group card overflow-hidden hover:-translate-y-1 transition">
+          {p.cover_image_url && (
+            <div class="aspect-[4/3] overflow-hidden">
+              <img src={p.cover_image_url} alt={p.title} loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            </div>
+          )}
+          <div class="p-5">
+            <h2 class="font-semibold text-lg leading-tight">{p.title}</h2>
+            {p.excerpt && <p class="mt-2 text-sm text-[color:var(--color-muted)] line-clamp-3">{p.excerpt}</p>}
+            <span class="mt-3 inline-flex text-sm font-medium group-hover:text-[color:var(--color-accent)]">Read →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
+</main>
+<Footer />
+</Base>

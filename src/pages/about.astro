@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { breadcrumbSchema } from '../lib/schema';
+---
+<Base title="About MatCraft | Premium Mousemats" description="MatCraft makes precision-stitched mousemats from our Manchester workshop. Learn how we build every surface and who we build them for." structuredData={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }])}>
+<Header />
+<main class="container-x py-16">
+  <nav class="text-xs text-[color:var(--color-muted)] mb-4"><a href="/" class="hover:underline">Home</a> / About</nav>
+  <h1 class="text-4xl md:text-6xl font-semibold tracking-tight max-w-3xl">We build mousemats the way watchmakers build movements.</h1>
+  <p class="mt-6 text-lg text-[color:var(--color-muted)] max-w-3xl">MatCraft started with one frustration: every mousemat on the market either felt cheap, wore out, or looked like it belonged in a cyber-cafe. So in 2019 we set up a workshop in Manchester, sourced fabric from a Portuguese textile mill, and started stitching mousemats the way they used to be made — by hand, with care, and with materials that outlast the mice they cradle.</p>
+
+  <section class="mt-16 grid md:grid-cols-2 gap-12 items-center">
+    <img src="https://images.unsplash.com/photo-1629429407759-01cd3d7cfb38?w=1200&auto=format&fit=crop" alt="MatCraft workshop stitching station" class="rounded-3xl aspect-square object-cover" loading="lazy" />
+    <div>
+      <h2 class="text-3xl font-semibold tracking-tight">The craft</h2>
+      <p class="mt-4 text-[color:var(--color-muted)] leading-relaxed">Every MatCraft mousemat is five engineered layers: a protective micro-fibre weave, a tuned glide coat, a closed-cell cushion core, a dense rubber base, and a double-stitched edge. We cut every mat by hand from full rolls of fabric, and each one gets a final check under daylight-balanced lamps before it leaves the workshop.</p>
+      <p class="mt-4 text-[color:var(--color-muted)] leading-relaxed">The result is a surface that tracks predictably across every sensor, stays flat for years, and doesn't fray no matter how many thousand flicks you throw at it.</p>
+      <a href="/shop" class="mt-6 inline-flex btn btn-primary">Shop the range →</a>
+    </div>
+  </section>
+
+  <section class="mt-20 grid md:grid-cols-3 gap-5">
+    <div class="card p-6">
+      <h3 class="font-semibold text-lg">For gamers</h3>
+      <p class="mt-2 text-sm text-[color:var(--color-muted)]">We test every weave with Hero, PAW and Focus Pro sensors so your mouse tracks the way its maker intended.</p>
+      <a href="/collections/gaming" class="mt-3 text-sm underline">Gaming range →</a>
+    </div>
+    <div class="card p-6">
+      <h3 class="font-semibold text-lg">For creatives</h3>
+      <p class="mt-2 text-sm text-[color:var(--color-muted)]">Designers, illustrators and editors need precision without noise. Our Classic and Extended ranges are built for long cursor days.</p>
+      <a href="/collections/desk" class="mt-3 text-sm underline">Desk range →</a>
+    </div>
+    <div class="card p-6">
+      <h3 class="font-semibold text-lg">For teams</h3>
+      <p class="mt-2 text-sm text-[color:var(--color-muted)]">Bulk custom prints for studios, streamers and businesses — from ten mats to ten thousand.</p>
+      <a href="/collections/custom" class="mt-3 text-sm underline">Custom range →</a>
+    </div>
+  </section>
+
+  <section class="mt-20 card p-10 bg-[color:var(--color-ink)] text-[color:var(--color-bone)]">
+    <h2 class="text-3xl font-semibold">Promises we keep</h2>
+    <ul class="mt-6 grid md:grid-cols-2 gap-4 text-sm text-white/80">
+      <li>✓ 30-day return on every stock mousemat.</li>
+      <li>✓ 2-year warranty against stitching failure.</li>
+      <li>✓ Carbon-neutral UK shipping.</li>
+      <li>✓ Responsibly sourced cloth & rubber.</li>
+    </ul>
+    <a href="/contact" class="mt-6 inline-flex btn bg-[color:var(--color-accent)] text-white">Talk to the workshop →</a>
+  </section>
+</main>
+<Footer />
+</Base>
