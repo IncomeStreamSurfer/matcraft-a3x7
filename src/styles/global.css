@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0a0a0a;
+  --color-bone: #f6f4ef;
+  --color-accent: #ff4b2b;
+  --color-accent-2: #2b5fff;
+  --color-muted: #6b6b6b;
+  --color-line: #e6e3dc;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+html, body { background: var(--color-bone); color: var(--color-ink); font-family: var(--font-body); }
+h1, h2, h3, h4, h5 { font-family: var(--font-display); letter-spacing: -0.02em; }
+
+.container-x { @apply mx-auto max-w-7xl px-5 md:px-8; }
+.btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-medium transition; }
+.btn-primary { @apply bg-[color:var(--color-ink)] text-[color:var(--color-bone)] hover:bg-[color:var(--color-accent)]; }
+.btn-ghost { @apply border border-[color:var(--color-line)] hover:border-[color:var(--color-ink)]; }
+.card { @apply rounded-3xl border border-[color:var(--color-line)] bg-white/60 backdrop-blur; }
+.pulse-ring { box-shadow: 0 0 0 0 rgba(255,75,43,0.6); animation: pulse 2.2s infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 28px rgba(255,75,43,0); } 100% { box-shadow: 0 0 0 0 rgba(255,75,43,0); } }
+.grain::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 3px 3px; pointer-events: none; opacity: .35; }
